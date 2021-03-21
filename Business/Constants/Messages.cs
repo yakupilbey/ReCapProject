@@ -18,6 +18,7 @@ namespace Business.Constants
         public static string CarAdded = "Araç kayıt işlemi başarılı";
         public static string CarDeleted = "Araç silme işlemi başarılı";
         public static string CarUpdated = "Araç güncelleme işlemi başarılı";
+        public static string CarsListed = "Araçlar listelendi";
 
         //ColorMessages
         public static string ColorAdded = "Renk kayıt işlemi başarılı";
@@ -25,11 +26,19 @@ namespace Business.Constants
         public static string ColorUpdated = "Renk güncelleme işlemi başarılı";
         public static string ColorAddError = "Eklemek istediğiniz renk zaten mevcut.Farklı bir renk giriniz.";
 
+        //CarImage Messages
+        public static string CarImageAdded = "Araç resimi eklendi";
+        public static string CarImageUpdated = "Araç resimi güncellendi";
+        public static string CarImageDeleted = "Araç resimi silindi";
+        public static string CarImagesListed = "Araç resimleri listelendi";
+        public static string CarImagesLimitExceeded = "En fazla 5 resim yüklenebilir";
+
         //BrandMessages
         public static string BrandAdded = "Marka kayıt işlemi başarılı";
         public static string BrandDeleted = "Marka silme işlemi başarılı";
         public static string BrandUpdated = "Marka güncelleme işlemi başarılı";
         public static string BrandAddError = "Eklemek istediğiniz marka zaten mevcut.Farklı bir marka giriniz.";
+        public static string BrandsListed = "Markalar listelendi";
 
         //CustomerMessages
         public static string CustomerAdded = "Müşteri kayıt işlemi başarılı";
@@ -41,7 +50,19 @@ namespace Business.Constants
         public static string UserDeleted = "Kulanıcı silme işlemi başarılı";
         public static string UserUpdated = "Kullanıcı güncelleme işlemi başarılı";
 
+        //Authorization
+        public static string AuthorizationDenied = "Yetkiniz yok.";
 
+        //AuthManager 
+        public static string UserRegistered = "Kayıt Olundu";
+        public static string UserNotFound = "Kullanıcı Bulunamadı";
+        public static string PasswordError = "Şifre Hatalı";
+        public static string SuccessfulLogin = "Giriş Başarılı";
+        public static string UserAlreadyExists = "Kullanıcı zaten mevcut";
+        public static string AccessTokenCreated = "Token Oluşturuldu";
+
+        //BankManager
+        public static string BankSuccess = "Banka bilgileri başarıyla eklendi";
 
 
     }

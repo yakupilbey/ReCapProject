@@ -1,13 +1,13 @@
 ﻿using Business.Abstract;
-using Business.Constants;
-using Core.Utilities.Results.Abstract;
-using Core.Utilities.Results.Concrete;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
+using Core.Utilities.Business;
+using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace Business.Concrete
@@ -21,31 +21,22 @@ namespace Business.Concrete
             _rentalDal = rentalDal;
         }
 
-        public IResult Add(Rental rental)
+        [ValidationAspect(typeof(RentalValidator))]
+        public IDataResult<Rental> Add(Rental rental)
         {
-            var result = CheckReturnDate(rental.CarId);
-            if (!result.Success)
+            var result = BusinessRules.Run(ReturnDateCheck(rental.CarId, rental.RentDate));
+            if (result != null)
             {
-                return new ErrorResult(result.Message);
+                return new ErrorDataResult<Rental>(result.Message);
             }
             _rentalDal.Add(rental);
-            return new SuccessResult(result.Message);
-        }
-
-        public IResult CheckReturnDate(int carId)
-        {
-            var result = _rentalDal.GetRentalDetails(x => x.CarId == carId && x.ReturnDate == null);
-            if (result.Count > 0)
-            {
-                return new ErrorResult(Messages.RentalAddedError);
-            }
-            return new SuccessResult(Messages.RentalAdded);
+            return new SuccessDataResult<Rental>(rental);
         }
 
         public IResult Delete(Rental rental)
         {
             _rentalDal.Delete(rental);
-            return new SuccessResult(Messages.RentalDeleted);
+            return new SuccessResult();
         }
 
         public IDataResult<List<Rental>> GetAll()
@@ -53,34 +44,39 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Rental>>(_rentalDal.GetAll());
         }
 
-        public IDataResult<Rental> GetById(int rentalId)
+        public IDataResult<Rental> GetById(int id)
         {
-            return new SuccessDataResult<Rental>(_rentalDal.Get(r => r.Id == rentalId));
+            return new SuccessDataResult<Rental>(_rentalDal.Get(r => r.Id == id));
         }
 
-        public IDataResult<List<RentalDetailDto>> GetRentalDetailsDto(int carId)
+        public IDataResult<List<RentalDetailDto>> GetRentalDetails()
         {
-            return new SuccessDataResult<List<RentalDetailDto>>(_rentalDal.GetRentalDetails(x => x.CarId == carId));
+            return new SuccessDataResult<List<RentalDetailDto>>(_rentalDal.GetRentalDetails());
         }
+
 
         public IResult Update(Rental rental)
         {
             _rentalDal.Update(rental);
-            return new SuccessResult(Messages.RentalUpdated);
+            return new SuccessResult();
         }
 
-        public IResult UpdateReturnDate(int carId)
+        // Business Rules
+
+        private IResult ReturnDateCheck(int carId, DateTime rentDate)
         {
-            var result = _rentalDal.GetAll(x => x.CarId == carId);
-            var updatedRental = result.LastOrDefault();
-            if (updatedRental.ReturnDate !=null)
-            {
-                return new ErrorResult(Messages.RentalUpdatedReturnDateError);
-            }
-            updatedRental.ReturnDate = DateTime.Now;
-            _rentalDal.Update(updatedRental);
-            return new SuccessResult(Messages.RentalUpdatedReturnDate);
+            var rentals = _rentalDal.GetRentalDetails(p => p.CarId == carId);
 
+            foreach (var item in rentals)
+            {
+                if (rentDate < item.ReturnDate)
+                {
+                    return new ErrorResult();
+                }
+            }
+
+            return new SuccessResult();
         }
+
     }
 }
